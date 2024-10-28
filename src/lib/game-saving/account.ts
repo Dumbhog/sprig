@@ -35,6 +35,8 @@ export interface User {
 	createdAt: Timestamp
 	email: string
 	username: string | null
+	failedLoginAttempts?: number
+	lockoutUntil?: Timestamp
 }
 
 export interface Session {
@@ -57,6 +59,8 @@ export interface Game {
 	roomParticipants?: RoomParticipant[]
 	isRoomOpen?: boolean
 	password?: string
+	isPublished?: boolean
+	githubPR?: string
 }
 
 export interface LoginCode {
@@ -226,7 +230,8 @@ export const makeOrUpdateSession = async (cookies: AstroCookies, userId: string,
 		path: '/',
 		maxAge: 60 * 60 * 24 * 365,
 		httpOnly: true,
-		sameSite: 'strict'
+		sameSite: 'lax',
+		secure: true,
 	})
 	return {
 		session: { id: _session.id, ...data } as Session,
